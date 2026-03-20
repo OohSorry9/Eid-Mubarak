@@ -1,8 +1,11 @@
 const canvas = document.getElementById('canvas')
 const ctx = canvas.getContext('2d', { willReadFrequently: true })
 canvas.width = 400
-canvas.height = 400
+canvas.height = 300
 
+window.addEventListener('touchmove', function(e){
+    e.preventDefault()
+}, { passive: false })
 
 
 const mouse = {
@@ -30,19 +33,29 @@ canvas.addEventListener('load', () => {
     mouse.y = undefined;
 })
 
+function getCanvasPosFromEvent(event){
+    const rect = canvas.getBoundingClientRect();
+    const x = (event.clientX - rect.left) * (canvas.width / rect.width);
+    const y = (event.clientY - rect.top) * (canvas.height / rect.height);
+    return { x, y };
+}
+
 canvas.addEventListener('mousemove', (event) => {
-    mouse.x = event.offsetX;
-    mouse.y = event.offsetY;
+    const pos = getCanvasPosFromEvent(event);
+    mouse.x = pos.x;
+    mouse.y = pos.y;
 })
 canvas.addEventListener('mouseout', (event) => {
     mouse.x = undefined
     mouse.y = undefined
 })
 canvas.addEventListener('touchmove', (event) => {
-    console.log(event.touches[0].clientX, event.touches[0].clientY);
-    mouse.x = event.touches[0].clientX;
-    mouse.y = event.touches[0].clientY;
-})
+    event.preventDefault()
+    const touch = event.touches[0];
+    const pos = getCanvasPosFromEvent(touch);
+    mouse.x = pos.x;
+    mouse.y = pos.y;
+}, { passive: false })
 
 canvas.addEventListener('touchend', () =>{
     mouse.x = undefined;
